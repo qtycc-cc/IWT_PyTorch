@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iwt"
+version = "0.1.0"
+description = "IWT (Iterative Weighted Thresholding) feature selection classifier based on PyTorch and scikit-learn."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "loguru>=0.7.3",
+    "matplotlib>=3.10.8",
+    "scikit-learn>=1.8.0",
+    "torch>=2.11.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/qtycc-cc/IWT_PyTorch"
+Repository = "https://github.com/qtycc-cc/IWT_PyTorch"
+
+[tool.uv.sources]
+torch = [
+	{ index = "pytorch-cu130", marker = "platform_system == 'Linux' or platform_system == 'Windows'" },
+]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.hatch.build.targets.wheel]
+only-include = ["iwt_classifier.py"]
