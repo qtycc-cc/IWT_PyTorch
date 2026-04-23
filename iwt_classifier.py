@@ -555,7 +555,7 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
 
     def predict_proba(self, X):
         check_is_fitted(self)
-        X = self._validate_data(X, reset=False)
+        X = validate_data(self, X, reset=False)
 
         device = self.gidx.device
         if self.need_normalize:
