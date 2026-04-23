@@ -572,5 +572,5 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
     def _normalize_columns(self, X):
         """每列除以其 L2 范数"""
         norms = np.linalg.norm(X, axis=0)
-        # norms[norms == 0] = 1  # 避免除零
+        norms[norms == 0] = 1  # 避免除零
         return X / norms
