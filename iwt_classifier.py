@@ -12,7 +12,6 @@ matplotlib.use('Agg')
 import numpy as np
 import matplotlib.pyplot as plt
 from dataclasses import dataclass, field
-from loguru import logger as loguru_logger
 from typing import Callable, Tuple, Literal, List
 from sklearn.base import ClassifierMixin, BaseEstimator, _fit_context
 from sklearn.utils.multiclass import check_classification_targets
@@ -105,9 +104,9 @@ def draw_loss_history(loss_history):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
 
-    loguru_logger.info(f"Figure saved in: {save_path}")
-    loguru_logger.info(f"Final loss: {loss_history[-1]}")
-    loguru_logger.info(f"Total iterations: {len(loss_history) - 1}")
+    print(f"Figure saved in: {save_path}")
+    print(f"Final loss: {loss_history[-1]}")
+    print(f"Total iterations: {len(loss_history) - 1}")
     
 
 def IWT_GSC(
@@ -321,11 +320,11 @@ def IWT_GSC(
             else:
                 tau = max(taumin, tau * stepsizeShrink)
                 if verbose:
-                    loguru_logger.debug(f"IWT backtracking... inner iteration = {j}, backtrackCount = {backtrackCount}, fx = {fx.item():.6e}, stepsize = {tau:.2e}")
+                    print(f"IWT backtracking... inner iteration = {j}, backtrackCount = {backtrackCount}, fx = {fx.item():.6e}, stepsize = {tau:.2e}")
 
         if not ls_pass:
             if verbose:
-                loguru_logger.debug(f"IWT backtrack failed! Current iter is {j}")
+                print(f"IWT backtrack failed! Current iter is {j}")
             x = x_old
             g = g_old
             Fx = torch.tensor(Fx_old, dtype=dtype, device=device)
@@ -343,14 +342,14 @@ def IWT_GSC(
 
         if HaltCond:
             if verbose:
-                loguru_logger.debug(f"Iter {j} reach stop condition in IWT Loop")
+                print(f"Iter {j} reach stop condition in IWT Loop")
             break
 
         thetak = 1 + gamma * thetak
         ck = ((thetak - 1) * ck + Fx.item()) / thetak
 
         if verbose:
-            loguru_logger.debug(f"find stepsize, iteration = {j}, obj = {fx.item():.6e}, stepsize = {tau:.2e}")
+            print(f"find stepsize, iteration = {j}, obj = {fx.item():.6e}, stepsize = {tau:.2e}")
 
         dx = x - x_old
         dg = g - g_old
@@ -445,7 +444,7 @@ def HIWT_GSC(
 
         if halt_cond and halt_cond1 and halt_cond2:
             if verbose:
-                loguru_logger.debug(f"Iter {k} reach stop condition in HOMO Loop")
+                print(f"Iter {k} reach stop condition in HOMO Loop")
             break
 
         lambda_param = eta * lambda_param
