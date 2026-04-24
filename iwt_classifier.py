@@ -84,7 +84,7 @@ def my_logistic(
     df = A @ (torch.sigmoid(u) - y) / A.shape[1]
     return f, df
 
-def draw_loss_history(loss_history):
+def draw_loss_history(loss_history, loss_path):
     title = f"Loss vs Iterations with loss = {loss_history[-1]}"
     plt.figure(figsize=(10, 6))
 
@@ -100,7 +100,7 @@ def draw_loss_history(loss_history):
 
     plt.tight_layout()
 
-    save_path = f'iwt_loss_history.png'
+    save_path = loss_path
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -381,6 +381,7 @@ def HIWT_GSC(
         sgidx: List[torch.Tensor] | None = None,
         verbose: bool = False,
         draw_loss: bool = False,
+        loss_path: str = "iwt_loss.png",
         num_stages: int = 5000,
         tol_x: float = 1e-3,
         tau: float = 1.0,
@@ -452,7 +453,7 @@ def HIWT_GSC(
         s1 = min(s, math.ceil(s1 * 2))
 
     if draw_loss:
-        draw_loss_history(loss_history)
+        draw_loss_history(loss_history, loss_path)
 
     homo_logger = HOMOLogger()
     homo_logger.x = x
@@ -466,16 +467,18 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
         "num_groups": [int],
         "s": [int],
         "gidx": [torch.Tensor],
+        "strategy": [str],
         "tau": [float],
         "tol_x": [float],
         "lambda_param": [float],
-        "strategy": [str],
         "equalsize": [bool],
         "sgidx": [list, type(None)],
         "mu": [float],
         "gmi": [torch.Tensor, type(None)],
         "verbose": [bool],
         "draw_loss": [bool],
+        "loss_path": [str],
+        "need_normalize": [bool],
     }
 
     def __init__(
@@ -494,6 +497,7 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
             gmi: torch.Tensor | None = None,
             verbose: bool = False,
             draw_loss: bool = False,
+            loss_path: str = "iwt_loss.png",
             need_normalize: bool = False,
     ):
         if strategy == 'M' and gmi is None:
@@ -511,6 +515,7 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
         self.gmi = gmi
         self.verbose = verbose
         self.draw_loss = draw_loss
+        self.loss_path = loss_path
         self.need_normalize = need_normalize
 
     @_fit_context(prefer_skip_nested_validation=True)
@@ -544,7 +549,8 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
             mu=self.mu,
             gmi=self.gmi,
             verbose=self.verbose,
-            draw_loss=self.draw_loss
+            draw_loss=self.draw_loss,
+            loss_path=self.loss_path,
         )
 
         self.X_ = result.x.cpu().numpy()
