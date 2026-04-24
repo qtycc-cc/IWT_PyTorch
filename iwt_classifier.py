@@ -558,16 +558,23 @@ class IWT_Classifier(ClassifierMixin, BaseEstimator):
         self.T_ = result.T
 
         return self
+    
+    def _compute_logits(self, X):
+      check_is_fitted(self)
+      X = validate_data(self, X, reset=False)
+      device = self.gidx.device
+      if self.need_normalize:
+          X = self._normalize_columns(X)
+      X = torch.tensor(X, dtype=torch.float32, device=device)
+      logits = X @ torch.tensor(self.X_, device=device)
+      return logits
+    
+    def decision_function(self, X):
+      logits = self._compute_logits(X)
+      return logits.cpu().numpy()
 
     def predict_proba(self, X):
-        check_is_fitted(self)
-        X = validate_data(self, X, reset=False)
-
-        device = self.gidx.device
-        if self.need_normalize:
-            X = self._normalize_columns(X)
-        X = torch.tensor(X, dtype=torch.float32, device=device)
-        logits = X @ torch.tensor(self.X_, device=device)
+        logits = self._compute_logits(X)
         probs = torch.sigmoid(logits).cpu().numpy()
         return np.vstack([1 - probs, probs]).T
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "IWT_PyTorch"
-version = "0.1.4"
+version = "0.1.5"
 description = "IWT (Iterative Weighted Thresholding) feature selection classifier based on PyTorch and scikit-learn."
 readme = "README.md"
 requires-python = ">=3.13"
